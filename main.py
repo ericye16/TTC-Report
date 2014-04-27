@@ -98,7 +98,8 @@ if __name__ == '__main__':
     #plt.subplots(1,1)
     lats = [x.stop_lat for x in stops_list.values()]
     longs = [x.stop_lon for x in stops_list.values()]
-    plt.scatter(longs, lats, marker='.')
+
+    plt.scatter(longs, lats, marker='.', c='b')
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
     plt.title('Geographic Distribution of All Stops')
