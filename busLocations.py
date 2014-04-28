@@ -18,10 +18,10 @@ if __name__ == '__main__':
         rt = route.tag
         print("Getting vehicles from route %s." % rt, file=sys.stderr)
         r = requests.get(
-            'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=ttc&r=%s' % rt)
+            'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=ttc&r=%s&t=0' % rt)
         root = ET.fromstring(r.text)
-        if root.find('Error'):
-            print(root.find('Error').attrib, file=sys.stderr)
+        if root.find('Error') is not None:
+            print(root.find('Error').text, file=sys.stderr)
         lt = root.find('lastTime')
         last = int(lt.attrib['time'])
         if last < current_last or current_last == -1:
