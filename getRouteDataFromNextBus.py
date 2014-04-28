@@ -16,6 +16,8 @@ Direction = namedtuple('Direction',
 class DirectionExt(Direction):
     pass
 
+## Gets the data from NextBus and puts it into RouteList.pickle
+## for further processing
 if __name__ == '__main__':
     ## collect routes
     # routeList comes from:
