@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 class Route:
@@ -40,7 +41,13 @@ def show_routes_all(routes_list):
         print(k, route)
         for k, trip in sorted(route.trips.items()):
             print("\t%s %s" %(k, trip))
-if __name__ == '__main__':
+
+
+def pearsons_index(series):
+    return 3 * (series.mean() - series.median()) / series.std()
+
+
+def main():
     routes_list = {}
     stops_list = {}
 
@@ -80,6 +87,9 @@ if __name__ == '__main__':
     trips_freq = []
     for route in routes_list.values():
         trips_freq.append((route.route_short_name, len(route.trips)))
+    trips_series = pd.Series([x[1] for x in trips_freq])
+    print(trips_series.describe())
+    print("Pearson's: %s" % pearsons_index(trips_series))
 
     #plt.figure()
     fig, ax = plt.subplots(1,1)
@@ -108,3 +118,5 @@ if __name__ == '__main__':
 
     plt.show()
 
+if __name__ == '__main__':
+    main()
