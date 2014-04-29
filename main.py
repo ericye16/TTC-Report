@@ -2,6 +2,8 @@ import csv
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 class Route:
     def __init__(self, route_id, route_short_name, route_long_name, route_type):
         self.route_id = route_id
@@ -13,6 +15,8 @@ class Route:
     def __repr__(self):
         return "Route(%s,%s,%s,%s)" % (self.route_id, self.route_short_name,
                                        self.route_long_name, self.route_type)
+
+
 class Trip:
     def __init__(self, trip_id, service_id, trip_headsign):
         self.trip_id = trip_id
@@ -24,6 +28,7 @@ class Trip:
         return "Trip(%s,%s,%s)" % (self.trip_id, self.service_id,
                                    self.trip_headsign)
 
+
 class Stop:
     def __init__(self, stop_id, stop_name, stop_lat, stop_lon):
         self.stop_id = stop_id
@@ -32,8 +37,8 @@ class Stop:
         self.stop_lon = stop_lon
 
     def __repr__(self):
-        return "Stop(%s,%s,%s,%s)" % (self.stop_id,self.stop_name,self.stop_lat,
-                                         self.stop_lon)
+        return "Stop(%s,%s,%s,%s)" % (self.stop_id, self.stop_name, self.stop_lat,
+                                      self.stop_lon)
 
 
 def show_routes_all(routes_list):
@@ -53,7 +58,7 @@ def main():
 
     with open('schedules/routes.txt') as routes_file: 
         routes_csv = csv.reader(routes_file)
-        next(routes_csv) #skip header
+        next(routes_csv)  # skip header
         for route in routes_csv:
             route_id =int(route[0])
             route_short_name = route[2]
@@ -114,7 +119,6 @@ def main():
     plt.ylabel('Latitude')
     plt.title('Geographic Distribution of All Stops')
     plt.savefig('figures/geographic_stop_dist.png', dpi=300)
-
 
     plt.show()
 
