@@ -13,5 +13,7 @@ def plot(vehicles, figure_filename="vehicles-data/figure-tmp.png"):
     plt.ylabel('Latitude')
     t = strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime(latest_time // 1000))
     plt.title("Geographic distribution of buses at %s" % t)
+    plt.xlim(-79.7,-79.0)
+    plt.ylim(43.55, 43.95)
     plt.savefig(figure_filename)
     plt.show()
