@@ -1,6 +1,7 @@
 import pickle, requests, collections, sys, time
 import xml.etree.ElementTree as ET
 from getRouteDataFromNextBus import RoutesExt, StopsFromNextBus, DirectionExt
+import plotBusLocations
 
 Vehicle = collections.namedtuple('Vehicle',
                                  ['id', 'routeTag', 'dirTag', 'lat', 'lon',
@@ -36,12 +37,15 @@ if __name__ == '__main__':
                 dirTag = vehicle.attrib['dirTag']
             else:
                 dirTag = None
-            lat = vehicle.attrib['lat']
-            lon = vehicle.attrib['lon']
-            predictable = vehicle.attrib['predictable']
-            heading = vehicle.attrib['heading']
+            lat = float(vehicle.attrib['lat'])
+            lon = float(vehicle.attrib['lon'])
+            predictable = bool(vehicle.attrib['predictable'])
+            heading = int(vehicle.attrib['heading'])
+            if 'secsSinceLastReport' in vehicle.attrib:
+                last = last - int(vehicle.attrib['secsSinceLastReport']) * 1000
             vehicles[vId] = Vehicle(vId, routeTag, dirTag, lat, lon, predictable,
                                     heading, last)
     with open('vehicles-data/vehicles-%s'% now, 'wb') as vehiclesFile:
         pickle.dump(vehicles, vehiclesFile)
+    plotBusLocations.plot(vehicles, 'vehicles-data/figure-%s.png' % current_last)
 
