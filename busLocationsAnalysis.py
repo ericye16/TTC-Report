@@ -5,7 +5,7 @@ if __name__ == '__main__':
     dataFiles = glob.glob('vehicles-data/vehicles-*')
     vehicles_dict = {}
     for i, dataFile in enumerate(sorted(dataFiles)):
-        print("Processing file: %s with %.2f%% complete" % (dataFile, i * 10 / len(dataFiles)), file=sys.stderr)
+        print("Processing file: %s with %.2f%% complete" % (dataFile, i * 100 / len(dataFiles)), file=sys.stderr)
         f = open(dataFile, 'rb')
         vehicles = pickle.load(f)
         for vehicle in vehicles.values():
@@ -23,3 +23,5 @@ if __name__ == '__main__':
             else:
                 vehicles_dict[vId] = [vehicle]
         f.close()
+    with open("busLocationsAnalysis.pickle", "wb") as pickleFile:
+        pickle.dump(vehicles_dict, pickleFile)
