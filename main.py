@@ -1,6 +1,9 @@
 import csv
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 class Route:
     def __init__(self, route_id, route_short_name, route_long_name, route_type):
         self.route_id = route_id
@@ -12,6 +15,8 @@ class Route:
     def __repr__(self):
         return "Route(%s,%s,%s,%s)" % (self.route_id, self.route_short_name,
                                        self.route_long_name, self.route_type)
+
+
 class Trip:
     def __init__(self, trip_id, service_id, trip_headsign):
         self.trip_id = trip_id
@@ -23,6 +28,7 @@ class Trip:
         return "Trip(%s,%s,%s)" % (self.trip_id, self.service_id,
                                    self.trip_headsign)
 
+
 class Stop:
     def __init__(self, stop_id, stop_name, stop_lat, stop_lon):
         self.stop_id = stop_id
@@ -31,8 +37,8 @@ class Stop:
         self.stop_lon = stop_lon
 
     def __repr__(self):
-        return "Stop(%s,%s,%s,%s)" % (self.stop_id,self.stop_name,self.stop_lat,
-                                         self.stop_lon)
+        return "Stop(%s,%s,%s,%s)" % (self.stop_id, self.stop_name, self.stop_lat,
+                                      self.stop_lon)
 
 
 def show_routes_all(routes_list):
@@ -40,13 +46,19 @@ def show_routes_all(routes_list):
         print(k, route)
         for k, trip in sorted(route.trips.items()):
             print("\t%s %s" %(k, trip))
-if __name__ == '__main__':
+
+
+def pearsons_index(series):
+    return 3 * (series.mean() - series.median()) / series.std()
+
+
+def main():
     routes_list = {}
     stops_list = {}
 
     with open('schedules/routes.txt') as routes_file: 
         routes_csv = csv.reader(routes_file)
-        next(routes_csv) #skip header
+        next(routes_csv)  # skip header
         for route in routes_csv:
             route_id =int(route[0])
             route_short_name = route[2]
@@ -80,6 +92,9 @@ if __name__ == '__main__':
     trips_freq = []
     for route in routes_list.values():
         trips_freq.append((route.route_short_name, len(route.trips)))
+    trips_series = pd.Series([x[1] for x in trips_freq])
+    print(trips_series.describe())
+    print("Pearson's: %s" % pearsons_index(trips_series))
 
     #plt.figure()
     fig, ax = plt.subplots(1,1)
@@ -105,6 +120,7 @@ if __name__ == '__main__':
     plt.title('Geographic Distribution of All Stops')
     plt.savefig('figures/geographic_stop_dist.png', dpi=300)
 
-
     plt.show()
 
+if __name__ == '__main__':
+    main()
