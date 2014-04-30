@@ -47,5 +47,3 @@ if __name__ == '__main__':
                                     heading, last)
     with open('vehicles-data/vehicles-%s'% now, 'wb') as vehiclesFile:
         pickle.dump(vehicles, vehiclesFile)
-    plotBusLocations.plot(vehicles, 'vehicles-data/figure-%s.png' % current_last)
-
