@@ -1,6 +1,18 @@
 import pickle, glob, sys, sqlite3
 from busLocations import Vehicle
 
+
+def vehicleGenerator(vehicles):
+    for vehicle in vehicles:
+        vId = int(vehicle.id)
+        routeTag = vehicle.routeTag
+        dirTag = vehicle.dirTag
+        lat = float(vehicle.lat)
+        lon = float(vehicle.lon)
+        timestamp = int(vehicle.timestamp)
+        heading = int(vehicle.heading)
+        yield (vId, routeTag, dirTag, lat, lon, heading, timestamp)
+
 if __name__ == '__main__':
     db = sqlite3.connect("busLocations.sqlite3")
     cur = db.cursor()
@@ -12,21 +24,11 @@ if __name__ == '__main__':
         print("Processing file: %s with %.2f%% complete" % (dataFile, i * 100 / len(dataFiles)), file=sys.stderr)
         f = open(dataFile, 'rb')
         vehicles = pickle.load(f)
-        def vehicleGenerator(vehicles):
-            for vehicle in vehicles:
-                vId = int(vehicle.id)
-                routeTag = vehicle.routeTag
-                dirTag = vehicle.dirTag
-                lat = float(vehicle.lat)
-                lon = float(vehicle.lon)
-                timestamp = int(vehicle.timestamp)
-                heading = int(vehicle.heading)
-                yield (vId, routeTag, dirTag, lat, lon, heading, timestamp)
         cur.executemany("INSERT OR IGNORE INTO vehicles VALUES(?,?,?,?,?,?,?)", vehicleGenerator(vehicles.values()))
         num_vehicles = len(vehicles)
         time_stamp = int(dataFile.split('-')[2])
         time_dist.append((time_stamp, num_vehicles))
-        if (i % 10 == 0):
+        if i % 100 == 0:
             db.commit()
         f.close()
     db.commit()
