@@ -28,6 +28,11 @@ if __name__ == '__main__':
     db = client.datasummative
     collection = db.vehicles
     collection.create_index([('vId', pymongo.ASCENDING), ('timestamp', pymongo.ASCENDING)])
+    collection.create_index('timestamp', pymongo.DESCENDING)
+    latest = collection.find_one(sort=[('timestamp', pymongo.DESCENDING)])['timestamp'] // 1000
+    latest -= 360 #for good luck, in case clocks aren't synchronized
+    dataFiles = [x for x in dataFiles if int(x.split('-')[2]) > latest]
+    #print(dataFiles)
     time_dist = []
     for i, dataFile in enumerate(sorted(dataFiles)):
         print("Processing file: %s with %.2f%% complete" % (dataFile, i * 100 / len(dataFiles)), file=sys.stderr)
