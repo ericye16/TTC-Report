@@ -5,16 +5,26 @@ import requests
 import pickle
 import sys
 
-RoutesFromNextBus = namedtuple('RoutesFromNextBus',
-                               ['tag', 'title'])
-class RoutesExt(RoutesFromNextBus):
-    pass
-StopsFromNextBus = namedtuple('StopsFromNextBus',
-                              ['tag', 'title', 'lat', 'lon', 'stopId'])
-Direction = namedtuple('Direction',
-                       ['tag', 'title', 'name'])
-class DirectionExt(Direction):
-    pass
+class RoutesExt(object):
+    def __init__(self, tag, title):
+        self.tag = tag
+        self.title = title
+
+
+class StopsFromNextBus(object):
+    def __init__(self, tag, title, lat, lon, stopId):
+        self.tag = tag
+        self.title = title
+        self.lat = lat
+        self.lon = lon
+        self.stopId = stopId
+
+
+class DirectionExt(object):
+    def __init__(self, tag, title, name):
+        self.tag = tag
+        self.title = title
+        self.name = name
 
 ## Gets the data from NextBus and puts it into RouteList.pickle
 ## for further processing
@@ -67,7 +77,6 @@ if __name__ == '__main__':
             directions[tag] = d
         route.stops = stops
         route.directions = directions
-            
 
     with open('routeList.pickle', 'wb') as routeListPickleFile:
         pickle.dump(routes, routeListPickleFile)
