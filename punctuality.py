@@ -1,7 +1,9 @@
-import pymongo, re
-from pymongo import MongoClient, ASCENDING, DESCENDING
 import sys
+
+from pymongo import MongoClient, ASCENDING
+
 from normalize_directions import extract_rdb, create_regex
+
 
 if __name__ == '__main__':
     client = MongoClient()
