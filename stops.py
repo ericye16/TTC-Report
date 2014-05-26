@@ -21,8 +21,9 @@ if __name__ == '__main__':
                 'stopId': stop.stopId,
                 'tag': stop.tag,
                 'title': stop.title,
-                'lat': stop.lat,
-                'lon': stop.lon,
+                'lat': float(stop.lat),
+                'lon': float(stop.lon),
+                'directions': [],
             }
             print("Adding stop %s" % stop.tag, file=sys.stderr)
             stops_collection.update({'tag': stop.tag}, this_stop, upsert=True)
@@ -34,10 +35,11 @@ if __name__ == '__main__':
                 'tag': direction.tag,
                 'title': direction.title,
                 'name': direction.name,
+                'directions': [],
             }
             print("Adding direction %s" % direction.tag, file=sys.stderr)
-            direction_obj_id = directions_collection.update({'tag': direction.tag}, this_direction, upsert=True)
+            direction_obj = directions_collection.update({'tag': direction.tag}, this_direction, upsert=True)
             for stop_tag in direction.stops:
                 stops_collection.update({'tag': stop_tag},
                                         {'$push':
-                                             {'directions': direction_obj_id}})
+                                             {'directions': direction.tag}})
