@@ -7,6 +7,7 @@ from normalize_directions import normalize_tag
 if __name__ == '__main__':
     client = MongoClient()
     db = client.datasummative
+
     schedule_times_collection = db.schedule_times
     schedule_times_collection.create_index([('rt_id', ASCENDING), ('stop_tag', ASCENDING), ('stop_time', ASCENDING)])
     schedule_routes_collection = db.schedule_routes
@@ -16,6 +17,10 @@ if __name__ == '__main__':
     vehicles_collection = db.vehicles
     direction_collection = db.directions
     total = stop_times_collection.count()
+
+    punctuality_collection = db.punctuality
+    punctuality_collection.create_index([()])
+
     for i, stop_time in enumerate(stop_times_collection.find()):
         # print('stop time: ',stop_time)
         stop = stops_collection.find_one({'_id': stop_time['stop_id']})
@@ -24,7 +29,7 @@ if __name__ == '__main__':
         vehicle = vehicles_collection.find_one({'_id': stop_time['vehicle_id']})
         direction_tag = vehicle['dirTag']
         direction_tag_regex = normalize_tag(direction_tag)
-        direction = direction_collection.find_one({'tag': direction_tag_regex}, fields=['name'])
+        direction = direction_collection.find_one({'tag': direction_tag_regex}, fields=['name', 'tag'])
         if direction is None:
             continue
         direction_name = direction['name']
@@ -58,7 +63,22 @@ if __name__ == '__main__':
         prev_scheduled_stop_time = schedule_times_collection.find_one({'rt_id': schedule_route['_id'],
                                                                        'stop_tag': stop_tag,
                                                                        'stop_time': { '$ne': -1,
-                                                                                    '$lte': timestamp_of_stop}
-                                                                      }, sort=[('stop_time', DESCENDING)])
+                                                                                      '$lte': timestamp_of_stop}
+                                                                       }, sort=[('stop_time', DESCENDING)])
+        if prev_scheduled_stop_time is None:
+            continue
+
+        punctuality = {'sched_time_id': prev_scheduled_stop_time['_id'],
+                       'real_time_stop_id': stop_time['_id'],
+                       'time_sched': prev_scheduled_stop_time['stop_time'],
+                       'time_real': timestamp_of_stop,
+                       'day_of_week': service_class,
+                       'datetime_real': datetime.fromtimestamp(timestamp // 1000),
+                       'rt_tag': vehicle['routeTag'],
+                       'direction': direction['tag'],
+                       'punctuality': timestamp_of_stop - prev_scheduled_stop_time['stop_time']
+                       }
 
         print('Percent complete: %1.4f' % (i * 100 / total), file=sys.stderr)
+        punctuality_collection.insert(punctuality)
+        print(punctuality)
