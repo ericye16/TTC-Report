@@ -28,6 +28,14 @@ def create_regex(route, dir, branch):
     return re.compile(r"^%s_%s_%s%s\D*$" % (route, dir, route, branch))
 
 
+def normalize_tag(tag):
+    ext_tag = extract_rdb(tag)
+    if ext_tag is not None:
+        r, d, b = ext_tag
+        return create_regex(r, d, b)
+    return None
+
+
 if __name__ == '__main__':
     client = MongoClient()
     db = client.datasummative
