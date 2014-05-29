@@ -23,7 +23,7 @@ if __name__ == '__main__':
     for i, stop_time in enumerate(stop_times_collection.find()):
         # print('stop time: ',stop_time)
         stop = stops_collection.find_one({'_id': stop_time['stop_id']})
-        route = vehicles_collection.find_one({'_id': stop_time['vehicle_id']})
+        #route = vehicles_collection.find_one({'_id': stop_time['vehicle_id']})
         stop_tag = stop['tag']
         vehicle = vehicles_collection.find_one({'_id': stop_time['vehicle_id']})
         direction_tag = vehicle['dirTag']
@@ -49,6 +49,8 @@ if __name__ == '__main__':
                                                               'tag': vehicle['routeTag'],
                                                               'service_class': service_class
         })
+        if schedule_route is None:
+            continue
         # print(schedule_route)
 
         time_of_stop = datetime_of_stop.replace(year=1970, month=1, day=1)
@@ -78,6 +80,6 @@ if __name__ == '__main__':
                        'punctuality': timestamp_of_stop - prev_scheduled_stop_time['stop_time']
                        }
 
-        print('Percent complete: %1.4f' % (i * 100 / total), file=sys.stderr)
+        print('Percent complete: %1.4f%%' % (i * 100 / total), file=sys.stderr)
         punctuality_collection.insert(punctuality)
-        print(punctuality)
+        #print(punctuality)
