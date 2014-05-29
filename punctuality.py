@@ -19,7 +19,6 @@ if __name__ == '__main__':
     total = stop_times_collection.count()
 
     punctuality_collection = db.punctuality
-    punctuality_collection.create_index([()])
 
     for i, stop_time in enumerate(stop_times_collection.find()):
         # print('stop time: ',stop_time)
