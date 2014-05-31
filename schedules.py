@@ -40,7 +40,7 @@ if __name__ == '__main__':
                     stop_time = stop.attrib['epochTime']
                     stop_time_human = stop.text
                     stop_all = {'stop_tag': stop_tag,
-                                'stop_time': stop_time,
+                                'stop_time': int(stop_time),
                                 'stop_time_h': stop_time_human,
                                 'block': block_id,
                                 'rt_id': rt_id}

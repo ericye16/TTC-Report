@@ -1,5 +1,6 @@
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from datetime import datetime
+from pytz import timezone
 import sys
 
 from normalize_directions import normalize_tag
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     vehicles_collection = db.vehicles
     direction_collection = db.directions
     total = stop_times_collection.count()
+    num_accepted = 0
 
     punctuality_collection = db.punctuality
 
@@ -53,7 +55,8 @@ if __name__ == '__main__':
             continue
         # print(schedule_route)
 
-        time_of_stop = datetime_of_stop.replace(year=1970, month=1, day=1)
+        time_of_stop = datetime(1970,1,1,hour=datetime_of_stop.hour,minute=datetime_of_stop.minute,
+                                second=datetime_of_stop.second, tzinfo=timezone('UTC'))
         timestamp_of_stop = int(time_of_stop.timestamp() * 1000)
         # print('ts', timestamp_of_stop)
         # to find the previous scheduled stop time, we need to use:
@@ -67,7 +70,18 @@ if __name__ == '__main__':
                                                                                       '$lte': timestamp_of_stop}
                                                                        }, sort=[('stop_time', DESCENDING)])
         if prev_scheduled_stop_time is None:
-            continue
+            if time_of_stop.hour <= 4: # check the next day's
+                time_of_stop = time_of_stop.replace(day=2)
+                timestamp_of_stop = int(time_of_stop.timestamp() * 1000)
+                prev_scheduled_stop_time = schedule_times_collection.find_one({'rt_id': schedule_route['_id'],
+                                                               'stop_tag': stop_tag,
+                                                               'stop_time': { '$ne': -1,
+                                                                              '$lte': timestamp_of_stop}
+                                                               }, sort=[('stop_time', DESCENDING)])
+                if prev_scheduled_stop_time is None:
+                    continue
+            else:
+                continue
 
         punctuality = {'sched_time_id': prev_scheduled_stop_time['_id'],
                        'real_time_stop_id': stop_time['_id'],
@@ -80,6 +94,8 @@ if __name__ == '__main__':
                        'punctuality': timestamp_of_stop - prev_scheduled_stop_time['stop_time']
                        }
 
+        num_accepted += 1
         print('Percent complete: %1.4f%%' % (i * 100 / total), file=sys.stderr)
+        print('Percent with found stop: %1.4f%%' % (num_accepted * 100 / (i + 1)), file=sys.stderr)
         punctuality_collection.insert(punctuality)
         #print(punctuality)
