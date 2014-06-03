@@ -6,3 +6,4 @@ vehicles-data
 *.pkl
 *.xml
 *.pickle
+.ipynb_checkpoints
