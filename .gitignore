@@ -7,3 +7,4 @@ vehicles-data
 *.xml
 *.pickle
 .ipynb_checkpoints
+schedules
